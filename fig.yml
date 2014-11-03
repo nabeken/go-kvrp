@@ -12,6 +12,6 @@ review:
     - "8000:8000"
   environment:
     DOCKER_HOST:
-    GITHUB_WEBHOOKS_TOKEN:
+    GITHUB_OAUTH_TOKEN:
     HOST: "0.0.0.0"
     HUGOREVIEW_DOMAIN:
