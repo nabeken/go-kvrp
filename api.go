@@ -58,7 +58,7 @@ func (h *PullRequestHandler) open(payload *PullRequestEvent) error {
 }
 
 func (h *PullRequestHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	if req.Header.Get("X-Github-Event") != "ping" {
+	if req.Header.Get("X-Github-Event") == "ping" {
 		log.Print("Ping")
 		io.Copy(rw, req.Body)
 		return
