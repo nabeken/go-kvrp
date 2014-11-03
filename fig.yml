@@ -6,7 +6,7 @@ redis:
   volumes:
     - "/data"
 
-proxy:
+review:
   image: nabeken/hugoreview
   links:
     - redis
