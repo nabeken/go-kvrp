@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/fsouza/go-dockerclient"
 
@@ -27,6 +28,8 @@ func main() {
 		ContainerHandler: containerHandler,
 		Domain:           hugoreview.Getenv("HUGOREVIEW_DOMAIN", "hugo-local.mahiru.moe"),
 		Port:             hugoreview.Getenv("PORT", "8000"),
+
+		OAuthToken: os.Getenv("GITHUB_OAUTH_TOKEN"),
 	}
 
 	proxyHandler := hugoreview.NewHandler(redis)

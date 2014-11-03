@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/fsouza/go-dockerclient"
 )
@@ -26,11 +27,26 @@ type PullRequestHandler struct {
 	Domain string
 	Port   string
 
+	OAuthToken string
+
 	ContainerHandler *ContainerHandler
 }
 
 func (h *PullRequestHandler) formatHost(number int) string {
 	return fmt.Sprintf("pr-%d.%s", number, h.Domain)
+}
+
+func (h *PullRequestHandler) formatGitRepo(urlstr string) string {
+	if h.OAuthToken != "" {
+		u, err := url.Parse(urlstr)
+		if err != nil {
+			log.Print("hugoreview: failed to parse url:", urlstr)
+			return urlstr
+		}
+		u.User = url.User(h.OAuthToken)
+		return u.String()
+	}
+	return urlstr
 }
 
 func (h *PullRequestHandler) close(payload *PullRequestEvent) error {
@@ -46,7 +62,7 @@ func (h *PullRequestHandler) close(payload *PullRequestEvent) error {
 
 func (h *PullRequestHandler) open(payload *PullRequestEvent) error {
 	env := []string{
-		fmt.Sprintf("GIT_REPO=%s", payload.Repository.CloneURL),
+		fmt.Sprintf("GIT_REPO=%s", h.formatGitRepo(payload.Repository.CloneURL)),
 		fmt.Sprintf("GITHUB_PR_NUMBER=%d", payload.Number),
 	}
 	host := h.formatHost(payload.Number)
