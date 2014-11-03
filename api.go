@@ -3,6 +3,7 @@ package hugoreview
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -57,6 +58,12 @@ func (h *PullRequestHandler) open(payload *PullRequestEvent) error {
 }
 
 func (h *PullRequestHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if req.Header.Get("X-Github-Event") != "ping" {
+		log.Print("Ping")
+		io.Copy(rw, req.Body)
+		return
+	}
+
 	if req.Header.Get("X-Github-Event") != "pull_request" {
 		http.Error(rw, "Bad Request", http.StatusBadRequest)
 		return
