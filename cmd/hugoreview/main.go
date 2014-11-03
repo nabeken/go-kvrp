@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
 
@@ -11,9 +10,6 @@ import (
 )
 
 func main() {
-	var domain = flag.String("domain", "localdomain", "Specify a domain")
-	flag.Parse()
-
 	d, err := docker.NewClient(hugoreview.Getenv("DOCKER_HOST", "unix:///var/run/docker.sock"))
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +25,7 @@ func main() {
 
 	pullRequestHandler := &hugoreview.PullRequestHandler{
 		ContainerHandler: containerHandler,
-		Domain:           *domain,
+		Domain:           hugoreview.Getenv("HUGOREVIEW_DOMAIN", "hugo-local.mahiru.moe"),
 		Port:             hugoreview.Getenv("PORT", "8000"),
 	}
 
