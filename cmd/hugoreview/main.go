@@ -28,6 +28,7 @@ func main() {
 		ContainerHandler: containerHandler,
 		Domain:           hugoreview.Getenv("HUGOREVIEW_DOMAIN", "hugo-local.mahiru.moe"),
 		Port:             hugoreview.Getenv("PORT", "8000"),
+		Theme:            os.Getenv("HUGO_THEME"),
 
 		OAuthToken: os.Getenv("GITHUB_OAUTH_TOKEN"),
 	}

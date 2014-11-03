@@ -26,6 +26,7 @@ type PullRequestHandler struct {
 	Secret string
 	Domain string
 	Port   string
+	Theme  string
 
 	OAuthToken string
 
@@ -65,8 +66,12 @@ func (h *PullRequestHandler) open(payload *PullRequestEvent) error {
 		fmt.Sprintf("GIT_REPO=%s", h.formatGitRepo(payload.Repository.CloneURL)),
 		fmt.Sprintf("GITHUB_PR_NUMBER=%d", payload.Number),
 	}
+	cmd := []string{}
+	if h.Theme != "" {
+		cmd = append(cmd, "--theme="+h.Theme)
+	}
 	host := h.formatHost(payload.Number)
-	c, err := h.ContainerHandler.Run(host, h.Port, env)
+	c, err := h.ContainerHandler.Run(host, h.Port, cmd, env)
 	if err != nil {
 		return err
 	}
@@ -125,13 +130,14 @@ type ContainerHandler struct {
 }
 
 // Run creates new container and starts the container.
-func (h *ContainerHandler) Run(host, port string, env []string) (*Container, error) {
+func (h *ContainerHandler) Run(host, port string, cmd, env []string) (*Container, error) {
 	env = append(env, "PORT="+port)
 	opts := docker.CreateContainerOptions{
 		Config: &docker.Config{
 			Image:    h.Image,
 			Hostname: host,
 			Env:      env,
+			Cmd:      cmd,
 		},
 	}
 
